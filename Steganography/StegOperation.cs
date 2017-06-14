@@ -73,6 +73,8 @@ namespace Steganography
             return result;
         }
 
+        /*
+
         public static string extractText(Bitmap bmp)
         {
             int colorUnitIndex = 0;
@@ -156,5 +158,7 @@ namespace Steganography
 
             return result;
         }
+
+    */
     }
 }
