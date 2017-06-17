@@ -93,16 +93,9 @@ namespace Steganography
             stegoImage = (Bitmap)openedImage.Image;
 
             string extractedText = StegOperation.extractMessage(stegoImage);
-
-            if(Regex.IsMatch(extractedText, @"^[\w]+$"))
-            {
-                MessageBox.Show("Message successfully extracted from the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                textBox.Text = extractedText;
-            }
-            else
-            {
-                MessageBox.Show("The image does not contain hidden message", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            
+            //MessageBox.Show("Message successfully extracted from the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            textBox.Text = extractedText;
         }
 
         private void extractProper_Click(object sender, EventArgs e)
@@ -110,16 +103,9 @@ namespace Steganography
             stegoImage = (Bitmap)openedImage.Image;
 
             string extractedText = StegOperation.extractMessageInvert(stegoImage);
-
-            if (Regex.IsMatch(extractedText, @"^[\w]+$"))
-            {
-                MessageBox.Show("Message successfully extracted from the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                textBox.Text = extractedText;
-            }
-            else
-            {
-                MessageBox.Show("The image does not contain hidden message", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            
+            //MessageBox.Show("Message successfully extracted from the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            textBox.Text = extractedText;
         }
     }
 }

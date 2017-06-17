@@ -15,13 +15,6 @@ namespace Steganography
             int messageIndex = messageValue.Count;
             int binaryCount = 0;
             int zeroAdded = 0;
-            
-            
-            foreach(int i in messageValue)
-            {
-                char c = (char)i;
-                Console.WriteLine(~i);
-            }
 
             messageValue = invertMessageValue(messageValue);
 
@@ -95,8 +88,7 @@ namespace Steganography
                         if (binaryCount % 8 == 0)
                         {
                             messageValue = reverseBits(messageValue);
-
-                            Console.WriteLine(messageValue);
+                            
 
                             if (messageValue == 0) { return extractedMessage; }
 
@@ -137,8 +129,6 @@ namespace Steganography
                         if(binaryCount % 8 == 0)
                         {
                             messageValue = reverseBits(messageValue);
-
-                            Console.WriteLine(messageValue);
 
                             if(messageValue == 0) { return extractedMessage; }
 
