@@ -104,5 +104,22 @@ namespace Steganography
                 MessageBox.Show("The image does not contain hidden message", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void extractProper_Click(object sender, EventArgs e)
+        {
+            stegoImage = (Bitmap)openedImage.Image;
+
+            string extractedText = StegOperation.extractMessageInvert(stegoImage);
+
+            if (Regex.IsMatch(extractedText, @"^[\w]+$"))
+            {
+                MessageBox.Show("Message successfully extracted from the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                textBox.Text = extractedText;
+            }
+            else
+            {
+                MessageBox.Show("The image does not contain hidden message", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

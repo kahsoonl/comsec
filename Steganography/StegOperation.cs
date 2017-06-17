@@ -16,8 +16,16 @@ namespace Steganography
             int binaryCount = 0;
             int zeroAdded = 0;
             
+            
+            foreach(int i in messageValue)
+            {
+                char c = (char)i;
+                Console.WriteLine(~i);
+            }
 
-            for(int row = 0; row < oriImage.Height; row++)
+            messageValue = invertMessageValue(messageValue);
+
+            for (int row = 0; row < oriImage.Height; row++)
             {
                 for(int col = 0; col < oriImage.Width; col++)
                 {
@@ -66,6 +74,48 @@ namespace Steganography
             int messageValue = 0;
             int binaryCount = 0;
             string extractedMessage = String.Empty;
+
+
+            for (int row = 0; row < stegoImage.Height; row++)
+            {
+
+                for (int col = 0; col < stegoImage.Width; col++)
+                {
+                    Color currentPixel = stegoImage.GetPixel(col, row);
+
+                    colorRGB[0] = currentPixel.R;
+                    colorRGB[1] = currentPixel.G;
+                    colorRGB[2] = currentPixel.B;
+
+                    foreach (int pixelValue in colorRGB)
+                    {
+                        messageValue = messageValue * 2 + pixelValue % 2;
+                        binaryCount++;
+
+                        if (binaryCount % 8 == 0)
+                        {
+                            messageValue = reverseBits(messageValue);
+
+                            Console.WriteLine(messageValue);
+
+                            if (messageValue == 0) { return extractedMessage; }
+
+                            char word = (char)(messageValue);
+
+                            extractedMessage += word.ToString();
+                        }
+                    }
+                }
+            }
+            return extractedMessage;
+        }
+
+        public static string extractMessageInvert(Bitmap stegoImage)
+        {
+            int[] colorRGB = new int[3];
+            int messageValue = 0;
+            int binaryCount = 0;
+            string extractedMessage = String.Empty;
             
 
             for (int row = 0; row < stegoImage.Height; row++)
@@ -88,18 +138,28 @@ namespace Steganography
                         {
                             messageValue = reverseBits(messageValue);
 
+                            Console.WriteLine(messageValue);
+
                             if(messageValue == 0) { return extractedMessage; }
 
-                            char word = (char)messageValue;
+                            char word = (char)(messageValue - 1);
 
                             extractedMessage += word.ToString();
                         }
-
                     }
                 }
             }
-
             return extractedMessage;
+        }
+
+        public static List<int> invertMessageValue(List<int> message)
+        {
+            for(int count = 0; count < message.Count; count++)
+            {
+                message[count] = ~message[count];
+            }
+
+            return message; 
         }
 
         public static int reverseBits(int n)
