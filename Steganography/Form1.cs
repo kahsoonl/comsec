@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.Text.RegularExpressions;
 
 namespace Steganography
 {
@@ -24,30 +25,6 @@ namespace Steganography
         private void hideText_Click(object sender, EventArgs e)
         {
             Bitmap bmp = (Bitmap)openedImage.Image;
-            int R = 0, G = 0, B = 0;
-
-            Color pixel = bmp.GetPixel(0, 0);
-
-            R = pixel.R;
-            G = pixel.G;
-            B = pixel.B;
-
-            //Debug.Write(R + "\n");
-            //Debug.Write(G + "\n");
-            //Debug.Write(B + "\n");
-            
-            //Debug.Write(R % 2 + "\n");
-            //Debug.Write(G % 2 + "\n");
-            //Debug.Write(B % 2 + "\n");
-
-            // now, clear the least significant bit (LSB) from each pixel element
-            R = pixel.R - pixel.R % 2;
-            G = pixel.G - pixel.G % 2;
-            B = pixel.B - pixel.B % 2;
-
-            //Debug.Write(R + "\n");
-            //Debug.Write(G + "\n");
-            //Debug.Write(B + "\n");
 
             if(textBox.Text == "" || textBox.TextLength == 0)
             {
@@ -55,8 +32,11 @@ namespace Steganography
             }
             else
             {
-                stegoImage = StegOperation.embedText(textBox.Text, bmp);
-                MessageBox.Show("Message successfully hidden in the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                stegoImage = StegOperation.embedMessage(textBox.Text, bmp);
+                if(stegoImage != null)
+                {
+                    MessageBox.Show("Message successfully hidden in the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
@@ -105,6 +85,23 @@ namespace Steganography
                         }
                         break;
                 }
+            }
+        }
+
+        private void extractButton_Click(object sender, EventArgs e)
+        {
+            stegoImage = (Bitmap)openedImage.Image;
+
+            string extractedText = StegOperation.extractMessage(stegoImage);
+
+            if(Regex.IsMatch(extractedText, @"^[\w]+$"))
+            {
+                MessageBox.Show("Message successfully extracted from the image", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                textBox.Text = extractedText;
+            }
+            else
+            {
+                MessageBox.Show("The image does not contain hidden message", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

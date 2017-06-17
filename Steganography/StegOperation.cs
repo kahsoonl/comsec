@@ -1,43 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
-using System.IO;
 
 namespace Steganography
 {
     class StegOperation
     {
-        public static Bitmap embedText(string hiddenText, Bitmap oriImage)
+        public static Bitmap embedMessage(string hiddenText, Bitmap oriImage)
         {
             Color currentPixel;
-            int R = 0, G = 0, B = 0;
-            List<int> messageBits = new List<int>();
-
-            foreach (char c in hiddenText)
-            {
-                int binary = Convert.ToInt32(Convert.ToString(c, 2));
-                Console.WriteLine(binary);
-                messageBits.Add(ReverseInt(binary));
-                //Console.WriteLine(Convert.ToString(c, 2).PadLeft(8, '0'));
-                //Console.Write("\n"+hiddenText[0]);
-            }
-
-            currentPixel = oriImage.GetPixel(0, 0);
-
-            int test = currentPixel.R;
-            Console.WriteLine(test);
-            int test2 = Convert.ToInt32(Convert.ToString(test, 2).PadLeft(8,'0'));
-            Console.WriteLine(test2);
-            int test3 = Convert.ToInt32(test2.ToString(), 2);
-            Console.WriteLine(test3);
-
-            foreach(int i in messageBits)
-            {
-                Console.WriteLine(i);
-            }
+            int[] colorRGB = new int[3];
+            List<int> messageValue = new List<int>();
+            messageValue = ConvertMessage(messageValue, hiddenText);
+            int messageIndex = messageValue.Count;
+            int binaryCount = 0;
+            int zeroAdded = 0;
             
 
             for(int row = 0; row < oriImage.Height; row++)
@@ -46,103 +23,83 @@ namespace Steganography
                 {
                     currentPixel = oriImage.GetPixel(col, row);
 
-                    R = currentPixel.R;
-                    G = currentPixel.G;
-                    B = currentPixel.B;
-                    
+                    colorRGB[0] = ConvertEven(currentPixel.R);
+                    colorRGB[1] = ConvertEven(currentPixel.G);
+                    colorRGB[2] = ConvertEven(currentPixel.B);
 
+                    for (int rgbIndex = 0; rgbIndex < colorRGB.Length; rgbIndex++)
+                    {
+                        if(messageIndex > 0)
+                        {
+                            colorRGB[rgbIndex] += messageValue[messageValue.Count - messageIndex] % 2;
+                            messageValue[messageValue.Count - messageIndex] /= 2;
+                        }
 
+                        if (messageIndex == 0 && zeroAdded < 8)
+                        {
+                            oriImage.SetPixel(col, row, Color.FromArgb(colorRGB[0], colorRGB[1], colorRGB[2]));
+                            zeroAdded++;
+                        }
+                        else
+                        {
+                            oriImage.SetPixel(col, row, Color.FromArgb(colorRGB[0], colorRGB[1], colorRGB[2]));
+                        }
 
+                        if (zeroAdded == 8)
+                        {
+                            oriImage.SetPixel(col, row, Color.FromArgb(colorRGB[0], colorRGB[1], colorRGB[2]));
+                            return oriImage;
+                        }
 
+                        binaryCount++;
+
+                        if (binaryCount % 8 == 0) { messageIndex--; }
+                    }
                 }
             }
+            return oriImage;
+        }
 
+        public static string extractMessage(Bitmap stegoImage)
+        {
+            int[] colorRGB = new int[3];
+            int messageValue = 0;
+            int binaryCount = 0;
+            string extractedMessage = String.Empty;
             
 
-            return null;
-        }
-
-        public static int ReverseInt(int num)
-        {
-            int result = 0;
-            while (num > 0)
+            for (int row = 0; row < stegoImage.Height; row++)
             {
-                result = result * 10 + num % 10;
-                num /= 10;
-            }
-            return result;
-        }
 
-        /*
-
-        public static string extractText(Bitmap bmp)
-        {
-            int colorUnitIndex = 0;
-            int charValue = 0;
-
-            // holds the text that will be extracted from the image
-            string extractedText = String.Empty;
-
-            // pass through the rows
-            for (int i = 0; i < bmp.Height; i++)
-            {
-                // pass through each row
-                for (int j = 0; j < bmp.Width; j++)
+                for (int col = 0; col < stegoImage.Width; col++)
                 {
-                    Color pixel = bmp.GetPixel(j, i);
+                    Color currentPixel = stegoImage.GetPixel(col, row);
 
-                    // for each pixel, pass through its elements (RGB)
-                    for (int n = 0; n < 3; n++)
+                    colorRGB[0] = currentPixel.R;
+                    colorRGB[1] = currentPixel.G;
+                    colorRGB[2] = currentPixel.B;
+
+                    foreach(int pixelValue in colorRGB)
                     {
-                        switch (colorUnitIndex % 3)
+                        messageValue = messageValue * 2 + pixelValue % 2;
+                        binaryCount++;
+
+                        if(binaryCount % 8 == 0)
                         {
-                            case 0:
-                                {
-                                    // get the LSB from the pixel element (will be pixel.R % 2)
-                                    // then add one bit to the right of the current character
-                                    // this can be done by (charValue = charValue * 2)
-                                    // replace the added bit (which value is by default 0) with
-                                    // the LSB of the pixel element, simply by addition
-                                    charValue = charValue * 2 + pixel.R % 2;
-                                }
-                                break;
-                            case 1:
-                                {
-                                    charValue = charValue * 2 + pixel.G % 2;
-                                }
-                                break;
-                            case 2:
-                                {
-                                    charValue = charValue * 2 + pixel.B % 2;
-                                }
-                                break;
+                            messageValue = reverseBits(messageValue);
+
+                            if(messageValue == 0) { return extractedMessage; }
+
+                            char word = (char)messageValue;
+
+                            extractedMessage += word.ToString();
                         }
 
-                        colorUnitIndex++;
-
-                        // if 8 bits has been added, then add the current character to the result text
-                        if (colorUnitIndex % 8 == 0)
-                        {
-                            // reverse? of course, since each time the process happens on the right (for simplicity)
-                            charValue = reverseBits(charValue);
-
-                            // can only be 0 if it is the stop character (the 8 zeros)
-                            if (charValue == 0)
-                            {
-                                return extractedText;
-                            }
-
-                            // convert the character value from int to char
-                            char c = (char)charValue;
-
-                            // add the current character to the result text
-                            extractedText += c.ToString();
-                        }
                     }
                 }
             }
 
-            return extractedText;
+            return extractedMessage;
         }
 
         public static int reverseBits(int n)
@@ -155,10 +112,22 @@ namespace Steganography
 
                 n /= 2;
             }
-
             return result;
         }
 
-    */
+        public static int ConvertEven(int value)
+        {
+            return value - value % 2;
+        }
+
+        public static List<int> ConvertMessage(List<int> messageList, string message)
+        {
+            foreach(int s in message)
+            {
+                messageList.Add(s);
+            }
+
+            return messageList;
+        }
     }
 }

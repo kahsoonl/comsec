@@ -28,13 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.hideText = new System.Windows.Forms.Button();
             this.openedImage = new System.Windows.Forms.PictureBox();
             this.browseImageDialog = new System.Windows.Forms.OpenFileDialog();
-            this.textBox = new System.Windows.Forms.RichTextBox();
             this.imageButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.extractButton = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.textBox = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.openedImage)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,15 +64,6 @@
             // browseImageDialog
             // 
             this.browseImageDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.browseImageDialog_FileOk);
-            // 
-            // textBox
-            // 
-            this.textBox.Location = new System.Drawing.Point(345, 27);
-            this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(305, 316);
-            this.textBox.TabIndex = 3;
-            this.textBox.Text = "";
-            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // imageButton
             // 
@@ -100,16 +93,30 @@
             this.extractButton.TabIndex = 6;
             this.extractButton.Text = "Extract Text";
             this.extractButton.UseVisualStyleBackColor = true;
+            this.extractButton.Click += new System.EventHandler(this.extractButton_Click);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // textBox
+            // 
+            this.textBox.Location = new System.Drawing.Point(361, 27);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(289, 316);
+            this.textBox.TabIndex = 7;
+            this.textBox.Text = "";
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(662, 441);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.extractButton);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.imageButton);
-            this.Controls.Add(this.textBox);
             this.Controls.Add(this.openedImage);
             this.Controls.Add(this.hideText);
             this.Name = "MainWindow";
@@ -125,10 +132,11 @@
         private System.Windows.Forms.PictureBox openedImage;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog browseImageDialog;
-        private System.Windows.Forms.RichTextBox textBox;
         private System.Windows.Forms.Button imageButton;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button extractButton;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.RichTextBox textBox;
     }
 }
 
